@@ -19,11 +19,11 @@ function renderInfoProduct(product) {
          <p class="product__descr">${descr}</p>
          <div class="product__inner-price">
             <div class="product__price">
-               <b>Цена:</b>
+               <b>Price:</b>
                ${price}₽
             </div>
             <div class="product__discount">
-               <b>Цена со скидкой:</b>
+               <b>Discounted price:</b>
                ${priceDiscount}₽
             </div>
          </div>

@@ -19,6 +19,100 @@ let shownCards = COUNT_SHOW_CARDS_CLICK;
 let countClickBtnShowCards = 1;
 let productsData = [];
 
+getProducts();
+
+// Listeners
+btnShowCards.addEventListener('click', sliceArrCards);
+cards.addEventListener('click', handleCardClick);
+
+// Functions
+async function getProducts() {
+   try {
+      if (!productsData.length) {
+         const res = await fetch('../data/products.json');
+
+         if (!res.ok) {
+            throw new Error(res.statusText);
+         }
+
+         productsData = await res.json();
+      }
+
+      if (
+         productsData.length > COUNT_SHOW_CARDS_CLICK &&
+         btnShowCards.classList.contains('none')
+      ) {
+         btnShowCards.classList.remove('none');
+      }
+
+      renderStartPage(productsData);
+   } catch (err) {
+      showErrorMessage(ERROR_SERVER);
+      console.log(err.message);
+   }
+}
+
+function renderStartPage(data) {
+   if (!data || !data.length) {
+      showErrorMessage(NO_PRODUCTS_IN_THIS_CATEGORY);
+      return;
+   }
+
+   const arrCards = data.slice(0, COUNT_SHOW_CARDS_CLICK);
+
+   createCards(arrCards);
+   checkingRelevanceValueBasket(data);
+
+   const basket = getBasketLocalStorage();
+   checkingActiveButtons(basket);
+}
+
+function sliceArrCards() {
+   if (shownCards >= productsData.length) return;
+
+   countClickBtnShowCards++;
+
+   const countShowCards = COUNT_SHOW_CARDS_CLICK * countClickBtnShowCards;
+   const arrCards = productsData.slice(shownCards, countShowCards);
+
+   createCards(arrCards);
+   shownCards = cards.children.length;
+
+   if (shownCards >= productsData.length) {
+      btnShowCards.classList.add('none');
+   }
+}
+
+function handleCardClick(event) {
+   const targetButton = event.target.closest('.card__add');
+
+   if (!targetButton) return;
+
+   const card = targetButton.closest('.card');
+   const id = card.dataset.productId;
+   const basket = getBasketLocalStorage();
+
+   if (basket.includes(id)) return;
+
+   basket.push(id);
+   setBasketLocalStorage(basket);
+   checkingActiveButtons(basket);
+}
+
+function checkingActiveButtons(basket) {
+   const btns = document.querySelectorAll('.card__add');
+
+   btns.forEach((btn) => {
+      const card = btn.closest('.card');
+      const id = card.dataset.productId;
+      const isInBasket = basket.includes(id);
+
+      btn.disabled = isInBasket;
+      btn.classList.toggle('active', isInBasket);
+      btn.textContent = isInBasket ? `Added` : `Add to cart`;
+   });
+}
+
 // Card render
 function createCards(data) {
    data.forEach((card) => {
@@ -38,7 +132,7 @@ function createCards(data) {
                   <div class="card__price card__price--common">${price}</div>
                </div>
                <a href="/card.html?id=${id}" class="card__title">${title}</a>
-               <button class="card__add">В корзину</button>
+               <button class="card__add">Add to cart</button>
             </div>
          </div>
       `;
