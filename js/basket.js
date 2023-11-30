@@ -95,10 +95,10 @@ function renderProductsBasket(arr) {
                <div class="cart__plus">+</div>
             </div>
             <div class="cart__price">
-               <span>${price}</span>₽
+               <span>${price}</span>$
             </div>
             <div class="cart__price-discount">
-               <span>${priceDiscount}</span>₽
+               <span>${priceDiscount}</span>$
             </div>
             <div class="cart__del-card">X</div>
          </div>
